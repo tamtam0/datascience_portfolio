@@ -1,0 +1,273 @@
+
+```{r }
+library(tm)
+library(stringr)
+library(wordcloud)
+library(cluster)
+library(stringi)
+library(Matrix)
+library(tidytext) # convert DTM to DF
+library(plyr) ## for adply
+library(ggplot2)
+library(SnowballC)
+library(mclust) # for Mclust EM clustering
+library(slam)
+library(factoextra)
+library(philentropy)
+library(proxy)
+library(sqldf)
+#library(readtext)
+#library(quanteda)
+# ONCE: install.packages("Snowball")
+## NOTE Snowball is not yet available for R v 3.5.x
+## So I cannot use it  - yet...
+##library("Snowball")
+##set working directory
+## ONCE: install.packages("slam")
+#library(slam)
+
+## ONCE: install.packages("quanteda")
+## Note - this includes SnowballC
+
+#library(arules)
+## ONCE: install.packages("wordcloud")
+#library(wordcloud)
+##ONCE: install.packages('proxy')
+#library(proxy)
+
+#library(factoextra) # for fviz
+
+
+setwd("/Users/tamtam/Dropbox/Masters/s2 - Winter 2021/IST_707_Data_Analytics/HW4")
+novelCorpus <- Corpus(DirSource("FedPapersCorpus"))
+#str(novelCorpus)
+names<- as.list(names(novelCorpus))
+fixed_names <- str_replace(names,"_fed","")
+fixed_names <- str_replace(fixed_names,".txt","")
+
+#meta(novelCorpus,tag="author",type="corpus") <- unlist(fixed_names, use.names=FALSE)
+meta(novelCorpus[[1]])
+meta(novelCorpus[[1]],5)
+
+#novelsDF <- readtext("FedPapersCorpus/*.txt",
+#  docvarsfrom = "filenames",
+#  dvsep = "_",
+#  encoding = "UTF-8"
+#)
+#novelCorpus <- corpus(novelsDF)
+#summary(novelCorpus)
+#str(novelCorpus)
+#(getTransformations())
+ndocs<-length(novelCorpus)
+
+
+
+summary(novelCorpus)
+meta(novelCorpus[[1]])
+meta(novelCorpus[[1]],5)
+
+
+# ignore extremely rare words i.e. terms that appear in less then 1% of the documents
+minTermFreq <- ndocs * 0.0001
+# ignore overly common words i.e. terms that appear in more than 50% of the documents
+maxTermFreq <- ndocs * 1
+
+
+stopWords <-stopwords('english')
+dtm <- DocumentTermMatrix(novelCorpus,
+                                 control = list(
+                                   stopwords = FALSE, 
+                                   wordLengths=c(3, 15),
+                                   removePunctuation = T,
+                                   removeNumbers = T,
+                                   tolower=T,
+                                   stemming = F,
+                                   remove_separators = T
+                                   #stopwords = stopWords
+                                   #bounds = list(global = c(minTermFreq, maxTermFreq))
+                                 ))
+
+#Fix the document Label, so we get a nice graph label
+dtm$dimnames$Docs<-fixed_names
+
+dtmMatrix <- as.matrix(dtm)
+dtmMatrix[1:13,1:5]
+#tfidf<- weightTfIdf(dtm, normalize = TRUE)
+#print(tfidf)
+#tfidf2 <- weightTfIdf(dtm, normalize = FALSE)
+#tfidf2[1:13,1:5]
+
+normalizeDTM<-function(dtmMatrix){
+  dtmMatrix_1 <- apply(dtmMatrix, 1, function(i) round(i/sum(i),3))
+  ## transpose
+  dtmMatrix_norm <- t(dtmMatrix_1)
+  return(dtmMatrix_norm)
+}
+
+dtmMatrix_norm<-normalizeDTM(dtm)
+
+#colors=rev(colorRampPalette(brewer.pal(9,"Blues"))(32)[seq(8,32,6)])
+wc<- function(matrix,title){
+  layout(matrix(c(1, 2), nrow=2), heights=c(1, 4))
+  par(mar=rep(0, 4))
+  plot.new()
+  text(x=0.5, y=0.5, title)
+  wordcloud(colnames(matrix), colSums(matrix), max.words = 30,colors=brewer.pal(8, "Dark2"), random.order=FALSE,rot.per=0.2,main="Title" )
+}
+#EDA
+disputedM<- subset(dtmMatrix, startsWith(rownames(dtmMatrix), 'dispt') )
+hamiltonM<- subset(dtmMatrix, startsWith(rownames(dtmMatrix), 'Hamilton') )
+jayM<- subset(dtmMatrix, startsWith(rownames(dtmMatrix), 'Jay') )
+madisonM<- subset(dtmMatrix, startsWith(rownames(dtmMatrix), 'Madison') )
+madison_and_Hamilton_M<- subset(dtmMatrix, startsWith(rownames(dtmMatrix), 'HM') )
+
+wc(disputedM,"Disputed")
+wc(hamiltonM,"Hamilton")
+wc(jayM,"Jay")
+wc(madisonM,"Madison")
+wc(madison_and_Hamilton_M,"Hamilton & Madison")
+
+
+temp<-str_split(fixed_names,"_",simplify = TRUE)
+
+dfSeq<-data.frame(temp)
+names(dfSeq)<-c("Author","Sequence")
+dfSeq$Sequence<- as.numeric(dfSeq$Sequence)
+dfSeq<- dfSeq[order(-dfSeq$Sequence),]
+dfSeq$label<-paste(dfSeq$Sequence,"-",dfSeq$Author)
+ggplot(dfSeq,aes(x=Sequence, label=label,y=0,color=Author))+ 
+  geom_text(angle=90) + theme_bw()
+
+#(head(sort(as.matrix(dtm)[13,], decreasing = TRUE), n=20))
+
+set.seed(2780)
+
+
+m  <- dtmMatrix
+m_norm <- dtmMatrix_norm
+
+
+#Determine number of clusters to divide
+fviz_nbclust(m,FUN=hcut, method="silhouette")
+fviz_nbclust(m_norm,FUN=hcut, method="silhouette")
+
+####################   k means clustering -----------------------------
+X <- m_norm
+## Remember that kmeans uses a matrix of ONLY NUMBERS
+## We have this so we are OK.
+## Manhattan gives the best vis results!
+#distance1 <- get_dist(X,method = "manhattan")
+#fviz_dist(distance1, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
+#distance2 <- get_dist(X,method = "pearson")
+#fviz_dist(distance2, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
+#distance3 <- get_dist(X,method = "canberra")
+#fviz_dist(distance3, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
+#distance4 <- get_dist(X,method = "spearman")
+#fviz_dist(distance4, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
+
+
+#X <- t(X)
+## Now scale the data
+#X <- scale(X)
+str(X)
+## k means
+kmeansFIT_1 <- kmeans(X,centers=6)
+#(kmeansFIT1)
+summary(kmeansFIT_1)
+kmeansFIT_1$cluster
+#fviz_cluster(kmeansFIT_1, data = X)
+#clusplot(X,as.factor(kmeansFIT_1$cluster))
+
+dfSeq$kmeans<- as.factor(kmeansFIT_1$cluster)
+
+ggplot(dfSeq, aes(x=Author,fill=kmeans,group=kmeans,color=kmeans))+geom_bar(stat="count") + theme_light()
+
+columSums<-data.frame(colSums(dtmMatrix))
+names(columSums)<-c("count")
+columSums$word<-rownames(columSums)
+columSums<-columSums[order(-columSums$count),]
+
+filteredColumns<- subset(columSums, count<400 & count>300)
+filteredColumns<- subset(filteredColumns,word!="author")
+
+#columns<-c("upon","all","may","also","even","from","shall","only")
+
+filteredDtmMatrix<- dtmMatrix[,filteredColumns$word]
+#filteredDtmMatrix<- dtmMatrix[,columns]
+
+filteredDtmMatrix_norm<-normalizeDTM(filteredDtmMatrix)
+
+#filteredDtmMatrix_norm<- sqldf("select * from filteredDtmMatrix_norm where row_names not like 'HM%'",row.names=TRUE)
+#head(sort(columSums,decreasing=TRUE))
+#ggplot(columSums, aes(x=word,y=count))+geom_point()+ theme_light()
+
+
+X<- filteredDtmMatrix_norm
+fviz_nbclust(X,FUN=hcut, method="silhouette")
+
+kmeansFIT_2 <- kmeans(X,centers=5)
+dfSeq$kmeans2<- as.factor(kmeansFIT_2$cluster)
+ggplot(dfSeq, aes(x=Author,fill=kmeans2,group=kmeans2,color=kmeans2))+geom_bar(stat="count") + theme_light()
+
+#clusplot(X,as.factor(kmeansFIT_2$cluster))
+fviz_cluster(kmeansFIT_2, data = X)
+
+############## Distance Measures ######################
+getDistMethods()
+
+# # # m <- m[1:2, 1:3]
+distMatrix_E <- dist(filteredDtmMatrix, method="euclidean")
+#print(distMatrix_E)
+distMatrix_C <- dist(filteredDtmMatrix, method="cosine")
+#print(distMatrix_C)
+distMatrix_C_norm <- dist(filteredDtmMatrix_norm, method="cosine")
+#print(distMatrix_C_norm)
+
+distMatrix_M_norm <- dist(filteredDtmMatrix_norm, method="manhattan")
+#print(distMatrix_M_norm)
+
+############# Clustering #############################
+## Hierarchical
+
+## Euclidean
+groups_E <- hclust(distMatrix_E,method="ward.D")
+plot(groups_E, cex=0.9, hang=-1)
+rect.hclust(groups_E, k=5)
+
+## Cosine Similarity
+groups_C <- hclust(distMatrix_C,method="ward.D")
+plot(groups_C, cex=0.9, hang=-1)
+rect.hclust(groups_C, k=5)
+
+## Cosine Similarity for Normalized Matrix
+groups_C_n <- hclust(distMatrix_C_norm,method="ward.D")
+plot(groups_C_n, cex=0.9, hang=-1)
+rect.hclust(groups_C_n, k=5)
+
+
+##  Manhattan for Normalized Matrix
+groups_M_n <- hclust(distMatrix_M_norm,method="ward.D")
+plot(groups_M_n, cex=0.9, hang=-1)
+rect.hclust(groups_M_n, k=5)
+
+
+################# Expectation Maximization ---------
+
+#X<-m
+#X <- t(X)
+ClusFI <- Mclust(distMatrix_M_norm,G=5)
+summary(ClusFI)
+dfSeq$em<-as.factor(ClusFI$classification)
+ggplot(dfSeq, aes(x=Author,fill=em,group=em,color=em))+geom_bar(stat="count") + theme_light()
+
+#plot(ClusFI, what = "classification")
+```
+
+
+
+---
+title: HW4.R
+author: tamtam
+date: '2021-02-13'
+
+---
