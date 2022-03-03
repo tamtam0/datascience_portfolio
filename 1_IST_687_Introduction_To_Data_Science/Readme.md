@@ -10,10 +10,10 @@ The scope of the project is limited to a flight booked within the United States.
 
 **Contents**
 
-Data: [IST_687_Project/Satisfaction Survey(2).xlsx](Survey Data)
+Data: [Survey Data](IST_687_Project/Satisfaction Survey(2).xlsx)
 
-Code: [IST_687_Project/IST687_Team3_FinalProject.R](Models)
+Code: [R Models](IST_687_Project/IST687_Team3_FinalProject.R)
 
-Report: [IST_687_Project/IST687_Team3_FinalProject.docx](Report)
+Report: [Project Report](IST_687_Project/IST687_Team3_FinalProject.docx)
 
-Presentation : [IST_687_Project/IST687_Team3_FinalProject.pptx](Presentation)
+Presentation : [Project Presentation](IST_687_Project/IST687_Team3_FinalProject.pptx)

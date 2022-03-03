@@ -8,14 +8,14 @@ The Whitman School of Management launched an Internet recruiting campaign from F
 
 Data: 
 
-[Homework2/Analytics MBA Marketing - Full-time Google Ads Campaigns 20121020-20130710.xlsx](Google Ads Data 1)
-[Homework2/Analytics MBA Marketing - iMBA Google Ads Campaigns 20120410-20121030.xlsx](Google Ads Data 2)
-[Homework2/Analytics whitman.syr.edu (exclude SU) Google Ads Campaigns 20110201-20110830.xlsx](Google Ads Data 3)
-[Homework2/Analytics whitman.syr.edu Delta -print Campaigns 20130920-20131120.xlsx](Google Ads Data 4)
+[Google Ads Data 1](Homework2/Analytics MBA Marketing - Full-time Google Ads Campaigns 20121020-20130710.xlsx)
+[Google Ads Data 2]9Homework2/Analytics MBA Marketing - iMBA Google Ads Campaigns 20120410-20121030.xlsx)
+[Google Ads Data 3](Homework2/Analytics whitman.syr.edu (exclude SU) Google Ads Campaigns 20110201-20110830.xlsx)
+[Google Ads Data 4](Homework2/Analytics whitman.syr.edu Delta -print Campaigns 20130920-20131120.xlsx)
 
-Analysis: [Homework2/Answers.xlsx](Analysis)
+Analysis: [Data Analysis](Homework2/Answers.xlsx)
 
-Report: [Homework2/HW2_Team3.docx](Report)
+Report: [Report](Homework2/HW2_Team3.docx)
 
 
 **2. Optimizing Product Pricing**
@@ -26,11 +26,9 @@ The Book Emporium wants to price books to optimize profits. The spreadsheet for 
 
 **Contents**
 
-Data & Analysis:
+Data & Analysis: [Book Data & Analysis](Homework3/Homework 3 Data Set - Book Prices.xlsx)
 
-[Homework3/Homework 3 Data Set - Book Prices.xlsx](Book Data & Analysis)
-
-Report: [Homework3/HW3_Team3_Final.docx](Report)
+Report: [Report](Homework3/HW3_Team3_Final.docx)
 
 
 **3. Loan Analysis**
@@ -41,10 +39,10 @@ Using the Universal Bank data, determine the factors which influence whether a c
 
 **Contents**
 
-Data: [Homework4/Homework 4 Data Set - Universal Bank.csv](Loan Data)
+Data: [Loan Data](Homework4/Homework 4 Data Set - Universal Bank.csv)
 
-Models: [Homework4/scm651_hw4.R](Models)
+Models: [R Models](Homework4/scm651_hw4.R)
 
-Analysis: [Homework4/HW4_Team3.xlsx](Analysis)
+Analysis: [Analysis](Homework4/HW4_Team3.xlsx)
 
-Report: [Homework4/HW4_Team3.docx](Report)
+Report: [Report](Homework4/HW4_Team3.docx)
