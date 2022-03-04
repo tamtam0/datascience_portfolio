@@ -8,10 +8,10 @@ The Whitman School of Management launched an Internet recruiting campaign from F
 
 Data: 
 
-[Google Ads Data 1](Homework2/Analytics MBA Marketing - Full-time Google Ads Campaigns 20121020-20130710.xlsx)
-[Google Ads Data 2]9Homework2/Analytics MBA Marketing - iMBA Google Ads Campaigns 20120410-20121030.xlsx)
-[Google Ads Data 3](Homework2/Analytics whitman.syr.edu (exclude SU) Google Ads Campaigns 20110201-20110830.xlsx)
-[Google Ads Data 4](Homework2/Analytics whitman.syr.edu Delta -print Campaigns 20130920-20131120.xlsx)
+[Google Ads Data 1](Homework2/Analytics%20MBA%20Marketing%20-%20Full-time%20Google%20Ads%20Campaigns%2020121020-20130710.xlsx)
+[Google Ads Data 2](Homework2/Analytics%20MBA%20Marketing%20-%20iMBA%20Google%20Ads%20Campaigns%2020120410-20121030.xlsx)
+[Google Ads Data 3](Homework2/Analytics%20whitman.syr.edu%20(exclude%20SU)%20Google%20Ads%20Campaigns%2020110201-20110830.xlsx)
+[Google Ads Data 4](Homework2/Analytics%20whitman.syr.edu%20Delta%20-print%20Campaigns%2020130920-20131120.xlsx)
 
 Analysis: [Data Analysis](Homework2/Answers.xlsx)
 
@@ -39,7 +39,7 @@ Using the Universal Bank data, determine the factors which influence whether a c
 
 **Contents**
 
-Data: [Loan Data](Homework4/Homework 4 Data Set - Universal Bank.csv)
+Data: [Loan Data](Homework4/Homework%204%20Data%20Set%20-%20Universal%20Bank.csv)
 
 Models: [R Models](Homework4/scm651_hw4.R)
 
